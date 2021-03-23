@@ -1,4 +1,4 @@
-defmodule AminoBaseTest do
+defmodule AminoInterpreterTest do
   use ExUnit.Case
 
   alias Amino
