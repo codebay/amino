@@ -24,8 +24,13 @@ defmodule Amino.Interpreter do
       |> Enum.reduce(stack, &term/2)
   end
 
-  defp term(function, stack) when is_atom(function) do
-    Kernel.apply(__MODULE__, function, [stack])
+  defp term(func, stack) when is_atom(func) do
+    Kernel.apply(__MODULE__, func, [stack])
+  end
+
+  defp term(func, stack) when is_function(func) do
+    func.()
+    |> dequote(stack)
   end
 
   defp term(item, stack) do

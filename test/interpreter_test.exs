@@ -60,7 +60,21 @@ defmodule AminoInterpreterTest do
   end
 
   test "Y - combinator" do
-    y = [[:dup, :cons], :swap, :cat, :dup, :cons, :i]
-    assert [[] | y] |> Amino.eval() == [[[:dup, :cons], :dup, :cons]]
+    y = fn -> [[:dup, :cons], :swap, :cat, :dup, :cons, :i] end
+    assert [[], y] |> Amino.eval() == [[[:dup, :cons], :dup, :cons]]
+  end
+
+  test "if True then 'This is the true option' else 'This is the false option'" do
+    # [true option] [false option] [condition] if
+    if_ = fn -> [:i] end
+    true_ = fn -> [[:zap, :i]] end
+    assert [["This is the true option"], ["This is the false option"], true_, if_] |> Amino.eval() == ["This is the true option"]
+  end
+
+  test "if False then 'This is the true option' else 'This is the false option'" do
+    # [true option] [false option] [condition] if
+    if_ = fn -> [:i] end
+    false_ = fn -> [[:swap, :zap, :i]] end
+    assert [["This is the true option"], ["This is the false option"], false_, if_] |> Amino.eval() == ["This is the false option"]
   end
 end
