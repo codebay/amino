@@ -48,6 +48,23 @@ defmodule AminoInterpreterTest do
     test "dip" do
       assert [ [:B], [:A], :dip] |> Amino.eval() == [ :A, [:B] ]
     end
+
+    # [B] [A] take == [A [B]]
+    test "take" do
+      assert [ [:B], [:A], :take ] |> Amino.eval() == [ [:A, [:B]] ]
+    end
+  end
+
+  describe "Base Combinators" do
+    # [B] [A] k == A
+    test "k" do
+      assert [ [:B], [:A], :k ] |> Amino.eval() == [ :A ]
+    end
+
+    # [B] [A] cake == [[B] A] [A [B]]
+    test "cake" do
+      assert [ [:B], [:A], :cake ] |> Amino.eval() == [ [[:B], :A], [:A, [:B]] ]
+    end
   end
 
   describe "Composite Definitions" do
@@ -59,10 +76,6 @@ defmodule AminoInterpreterTest do
       assert [ [:A], :unit ] |> Amino.eval() == [ [:A], [], :cons] |> Amino.eval()
     end
 
-    test "cat == [[i] dip i] cons cons" do
-      [ [:B], [:A], :cat ] |> Amino.eval() == [ [:B], [:A], [[:i], :dip, :i], :cons, :cons ] |> Amino.eval()
-    end
-
     test "cons == [unit] dip cat" do
       assert [ [:B], [:A], :cons ] |> Amino.eval() == [ [:B], [:A], [:unit], :dip, :cat] |> Amino.eval()
     end
@@ -72,11 +85,36 @@ defmodule AminoInterpreterTest do
     end
 
     test "dip == swap unit cat i" do
-      assert [ [:B], [:A], :dip] |> Amino.eval() == [ [:B], [:A], :swap, :unit, :cat, :i] |> Amino.eval()
+      assert [ [:B], [:A], :dip ] |> Amino.eval() == [ [:B], [:A], :swap, :unit, :cat, :i] |> Amino.eval()
+    end
+
+    test "dip == take i" do
+      assert [ [:B], [:A], :dip ] |> Amino.eval() ==  [ [:B], [:A], :take, :i] |> Amino.eval()
+    end
+
+    test "zap == [] k" do
+      assert [ [:A], :zap ] |> Amino.eval() ==  [ [:A], [], :k] |> Amino.eval()
+    end
+
+    test "dip == cake k" do
+      assert [ [:B], [:A], :dip] |> Amino.eval() == [ [:B], [:A], :cake, :k] |> Amino.eval()
+    end
+
+    test "cons == cake [] k" do
+      assert [ [:B], [:A], :cons ] |> Amino.eval() == assert [ [:B], [:A], :cake, [], :k ] |> Amino.eval()
+    end
+
+    test "i == [[]] dip k" do
+      assert [ [:A], :i ] |> Amino.eval() == assert [ [:A], [[]], :dip, :k ] |> Amino.eval()
+    end
+
+    test "dup == [] cake dip dip" do
+      assert [ [:A], :dup ] |> Amino.eval() == assert [ [:A], [], :cake, :dip, :dip ] |> Amino.eval()
     end
   end
 
-  describe "[true option] [false option] [condition] if" do
+  # [true option] [false option] [condition] if
+  describe "Conditional" do
     test "if True" do
       if_ = fn -> [:i] end
       true_ = fn -> [[:zap, :i]] end
@@ -92,9 +130,25 @@ defmodule AminoInterpreterTest do
     end
   end
 
-  test "Y - combinator" do
-    y = fn -> [[:dup, :cons], :swap, :cat, :dup, :cons, :i] end
+  describe "Useful Combined Combinators" do
+    test "Y - combinator" do
+      y = fn -> [[:dup, :cons], :swap, :cat, :dup, :cons, :i] end
 
-    assert [ [], y ] |> Amino.eval() == [ [[:dup, :cons], :dup, :cons] ]
+      assert [ [], y ] |> Amino.eval() == [ [[:dup, :cons], :dup, :cons] ]
+    end
+
+    # [C] [B] [A] dig2 == [B] [A] [C]
+    test "dig2" do
+      dig2 = fn -> [[], :cons, :cons, :dip] end
+
+      assert [ [:C], [:B], [:A], dig2 ] |> Amino.eval() == [ [:B], [:A], [:C] ]
+    end
+
+    # [C] [B] [A] bury2 == [A] [C] [B]
+    test "bury2" do
+      bury2 = fn -> [[[], :cons, :cons], :dip, :swap, :i] end
+
+      assert [ [:C], [:B], [:A], bury2 ] |> Amino.eval() == [ [:A], [:C], [:B] ]
+    end
   end
 end
