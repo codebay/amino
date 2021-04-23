@@ -4,11 +4,6 @@ defmodule AminoInterpreterTest do
   alias Amino
 
   describe "Combinators" do
-    # [A] :id   == [A]
-    test "id" do
-      assert [ ["A"], :id ] |> Amino.eval() == [ ["A"] ]
-    end
-
     # [B] [A] swap == [A] [B]
     test "swap" do
       assert [ ["B"], ["A"], :swap ] |> Amino.eval() == [ ["A"], ["B"] ]

@@ -34,8 +34,6 @@ defmodule Amino.Interpreter do
 
   # Combinator Operators
 
-  defp op(:id, [a | rest]) when is_list(a), do: [a | rest]
-
   defp op(:swap, [a, b | rest]) when is_list(a) and is_list(b), do: [b, a | rest]
 
   defp op(:dup, [a | rest]) when is_list(a), do: [a, a | rest]
