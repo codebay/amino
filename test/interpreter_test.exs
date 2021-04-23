@@ -85,6 +85,40 @@ defmodule AminoInterpreterTest do
     test "if False" do
       assert [ ["If Option"], ["Else Option"], false, :if ] |> Amino.eval() == [ ["Else Option"] ]
     end
+
+    test "==" do
+      assert [ 3, 3, :== ] |> Amino.eval() == [ true ]
+      assert [ 2, 3, :== ] |> Amino.eval() == [ false ]
+    end
+
+    test "!=" do
+      assert [ 3, 3, :!= ] |> Amino.eval() == [ false ]
+      assert [ 2, 3, :!= ] |> Amino.eval() == [ true ]
+    end
+
+    test "<" do
+      assert [ 3, 2, :< ] |> Amino.eval() == [ false ]
+      assert [ 3, 3, :< ] |> Amino.eval() == [ false ]
+      assert [ 2, 3, :< ] |> Amino.eval() == [ true ]
+    end
+
+    test ">" do
+      assert [ 3, 2, :> ] |> Amino.eval() == [ true ]
+      assert [ 3, 3, :> ] |> Amino.eval() == [ false ]
+      assert [ 2, 3, :> ] |> Amino.eval() == [ false ]
+    end
+
+    test ">=" do
+      assert [ 3, 2, :>= ] |> Amino.eval() == [ true ]
+      assert [ 3, 3, :>= ] |> Amino.eval() == [ true ]
+      assert [ 2, 3, :>= ] |> Amino.eval() == [ false ]
+    end
+
+    test "<=" do
+      assert [ 3, 2, :<= ] |> Amino.eval() == [ false ]
+      assert [ 3, 3, :<= ] |> Amino.eval() == [ true ]
+      assert [ 2, 3, :<= ] |> Amino.eval() == [ true ]
+    end
   end
 
   describe "List Operators" do
@@ -94,6 +128,14 @@ defmodule AminoInterpreterTest do
 
     test "Reverse" do
       assert [ [1, 2, 3], :reverse ] |> Amino.eval() == [ [3, 2, 1] ]
+    end
+
+    test "Head" do
+      assert [ [1, 2, 3], :head ] |> Amino.eval() == [ 1 ]
+    end
+
+    test "Tail" do
+      assert [ [1, 2, 3], :tail ] |> Amino.eval() == [ [2, 3] ]
     end
   end
 

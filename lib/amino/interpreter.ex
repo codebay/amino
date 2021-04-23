@@ -60,10 +60,27 @@ defmodule Amino.Interpreter do
 
   defp op(:reverse, [a | rest]) when is_list(a), do: [Enum.reverse(a) | rest]
 
+  defp op(:head, [[ head | _tail] | rest]), do: [head |
+   rest]
+
+  defp op(:tail, [[_head | tail] | rest]), do: [tail | rest]
+
   # Boolean & Conditional Operators
 
   defp op(:if, [a, b, c | rest]) when is_boolean(a) and is_list(b) and is_list(c), do:
     [if a do c else b end | rest]
+
+  defp op(:==, [a, b | rest]), do: [b == a | rest]
+
+  defp op(:!=, [a, b | rest]), do: [b != a | rest]
+
+  defp op(:<, [a, b | rest]) when is_number(a) and is_number(b), do: [b < a | rest]
+
+  defp op(:>, [a, b | rest]) when is_number(a) and is_number(b), do: [b > a | rest]
+
+  defp op(:>=, [a, b | rest]) when is_number(a) and is_number(b), do: [b >= a | rest]
+
+  defp op(:<=, [a, b | rest]) when is_number(a) and is_number(b), do: [b <= a | rest]
 
   # String Operators
 
