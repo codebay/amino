@@ -139,24 +139,25 @@ defmodule AminoInterpreterTest do
   end
 
   describe "Useful Combined Combinators" do
+    test "Elixir function" do
+      translate = fn [head | rest] ->
+        value =
+          case head do
+            1 -> "one"
+            2 -> "two"
+            _ -> "none"
+          end
+
+        [value | rest]
+      end
+
+      assert [ 2, translate ] |> Amino.eval() == [ "two" ]
+    end
+
     test "Y - combinator" do
       y = fn -> [[:dup, :cons], :swap, :cat, :dup, :cons, :i] end
 
       assert [ [], y ] |> Amino.eval() == [ [[:dup, :cons], :dup, :cons] ]
-    end
-
-    # [C] [B] [A] dig2 == [B] [A] [C]
-    test "dig2" do
-      dig2 = fn -> [[], :cons, :cons, :dip] end
-
-      assert [ [:C], ["B"], ["A"], dig2 ] |> Amino.eval() == [ ["B"], ["A"], [:C] ]
-    end
-
-    # [C] [B] [A] bury2 == [A] [C] [B]
-    test "bury2" do
-      bury2 = fn -> [[[], :cons, :cons], :dip, :swap, :i] end
-
-      assert [ [:C], ["B"], ["A"], bury2 ] |> Amino.eval() == [ ["A"], [:C], ["B"] ]
     end
   end
 end

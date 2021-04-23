@@ -88,8 +88,11 @@ defmodule Amino.Interpreter do
   defp op(:%, [a, b | rest]) when is_integer(a) and is_integer(b), do: [Integer.mod(b, a) | rest]
 
   defp op(func, stack) when is_function(func) do
-    func.()
-    |> dequote(stack)
+    case Function.info(func, :arity) do
+      {:arity, 0} -> dequote(func.(), stack)
+      {:arity, 1} -> func.(stack)
+      _ -> stack
+    end
   end
 
   defp op(item, stack) when is_list(item) or is_boolean(item) or is_number(item) or is_binary(item) do
