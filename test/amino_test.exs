@@ -16,12 +16,21 @@ defmodule AminoTest do
       8 => :i,
       9 => :dip,
 
-      10 => :true,
-      11 => :false,
+      10 => :take,
+      11 => :map,
+      12 => :reverse,
+      13 => :concat,
+      14 => :replace,
+      15 => :+,
+      16 => :-,
+      17 => :*,
+      18 => :/,
+      19 => :%,
 
-      12 => :if,
+      20 => true,
+      21 => false,
 
-      13 => :concat
+      22 => :if
     }
 
     data = ["AGT", "UAT"]
