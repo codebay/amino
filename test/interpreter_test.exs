@@ -135,7 +135,7 @@ defmodule AminoInterpreterTest do
 
   describe "Useful Combined Combinators" do
     test "Elixir function" do
-      translate = fn [head | rest] ->
+      translate = fn [head | rest] when is_integer(head) ->
         value =
           case head do
             1 -> "one"
