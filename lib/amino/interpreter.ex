@@ -32,6 +32,8 @@ defmodule Amino.Interpreter do
    [:false] :not =>
   """
 
+  # Combinator Operators
+
   defp op(:id, [a | rest]) when is_list(a), do: [a | rest]
 
   defp op(:swap, [a, b | rest]) when is_list(a) and is_list(b), do: [b, a | rest]
@@ -52,15 +54,45 @@ defmodule Amino.Interpreter do
 
   defp op(:take, [a, b | rest]) when is_list(a) and is_list(b), do: [a ++ [b] | rest]
 
+  # List Operators
+
+  defp op(:map, [a, b | rest]) when is_list(a) and is_list(b) do
+    [List.flatten(Enum.map(b, &(dequote([&1|a], [])))) | rest]
+  end
+
+  defp op(:reverse, [a | rest]) when is_list(a), do: [Enum.reverse(a) | rest]
+
+  # Boolean & Conditional Operators
+
   defp op(:if, [a, b, c | rest]) when is_boolean(a) and is_list(b) and is_list(c), do:
     [if a do c else b end | rest]
+
+  # String Operators
+
+  defp op(:reverse, [a | rest]) when is_binary(a), do: [String.reverse(a) | rest]
+
+  defp op(:replace, [a, b, c | rest]) when is_binary(a) and is_binary(b), do: [String.replace(c, b, a) | rest]
+
+  defp op(:concat, [a, b | rest]) when is_binary(a) and is_binary(b), do: [b <> a | rest]
+
+  # Numerical Operators
+
+  defp op(:+, [a, b | rest]) when is_number(a) and is_number(b), do: [b+a | rest]
+
+  defp op(:-, [a, b | rest]) when is_number(a) and is_number(b), do: [b-a | rest]
+
+  defp op(:*, [a, b | rest]) when is_number(a) and is_number(b), do: [b*a | rest]
+
+  defp op(:/, [a, b | rest]) when is_number(a) and is_number(b), do: [if a != 0 do b/a else 0 end | rest]
+
+  defp op(:%, [a, b | rest]) when is_integer(a) and is_integer(b), do: [Integer.mod(b, a) | rest]
 
   defp op(func, stack) when is_function(func) do
     func.()
     |> dequote(stack)
   end
 
-  defp op(item, stack) when is_list(item) or is_boolean(item) or is_binary(item) do
+  defp op(item, stack) when is_list(item) or is_boolean(item) or is_number(item) or is_binary(item) do
     [item | stack]
   end
 

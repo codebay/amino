@@ -15,11 +15,16 @@ defmodule AminoTest do
       7 => :cons,
       8 => :i,
       9 => :dip,
+
       10 => :true,
-      11 => :false
+      11 => :false,
+
+      12 => :if,
+
+      13 => :concat
     }
 
-    data = [[?A], [?G], [?T]]
+    data = ["AGT", "UAT"]
 
     nops = Enum.count(ops)
 

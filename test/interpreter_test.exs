@@ -92,6 +92,52 @@ defmodule AminoInterpreterTest do
     end
   end
 
+  describe "List Operators" do
+    test "Map" do
+      assert [ [1, 2, 3], [4, :+], :map ] |> Amino.eval() == [ [ 5, 6, 7 ] ]
+    end
+
+    test "Reverse" do
+      assert [ [1, 2, 3], :reverse ] |> Amino.eval() == [ [3, 2, 1] ]
+    end
+  end
+
+  describe "String Operators" do
+    test "reverse" do
+      assert [ "abcd", :reverse ] |> Amino.eval() == [ "dcba" ]
+    end
+
+    test "replace" do
+      assert [ "a,b,c", ",", "-", :replace ] |> Amino.eval() == [ "a-b-c" ]
+    end
+
+    test "concat" do
+      assert [ "Hello", "World", :concat ] |> Amino.eval() == [ "HelloWorld" ]
+    end
+  end
+
+  describe "Numeric Operators" do
+    test "plus" do
+      assert [ 2, 3, :+ ] |> Amino.eval() == [ 5 ]
+    end
+
+    test "minus" do
+      assert [ 5, 2, :- ] |> Amino.eval() == [ 3 ]
+    end
+
+    test "multiplication" do
+      assert [ 2, 3, :* ] |> Amino.eval() == [ 6 ]
+    end
+
+    test "division" do
+      assert [ 6, 2, :/ ] |> Amino.eval() == [ 3 ]
+    end
+
+    test "modulo" do
+      assert [ 5, 2, :% ] |> Amino.eval() == [ 1 ]
+    end
+  end
+
   describe "Useful Combined Combinators" do
     test "Y - combinator" do
       y = fn -> [[:dup, :cons], :swap, :cat, :dup, :cons, :i] end
