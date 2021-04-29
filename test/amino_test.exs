@@ -12,28 +12,10 @@ defmodule AminoTest do
       4 => :zap,
       5 => :unit,
       6 => :cat,
-      7 => :cons,
-      8 => :i,
-      9 => :dip,
-
-      10 => :take,
-      11 => :map,
-      12 => :reverse,
-      13 => :concat,
-      14 => :replace,
-      15 => :+,
-      16 => :-,
-      17 => :*,
-      18 => :/,
-      19 => :%,
-
-      20 => true,
-      21 => false,
-
-      22 => :if
+      7 => :cons
     }
 
-    data = ["AGT", "UAT"]
+    data = [["A"], ["G"], ["T"], ["U"], ["A"], ["T"]]
 
     nops = Enum.count(ops)
 
