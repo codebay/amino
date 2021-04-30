@@ -68,7 +68,7 @@ defmodule AminoInterpreterTest do
   end
 
   # [true option] [false option] [condition] if
-  describe "Conditional" do
+  describe "Church Booleans" do
     test "if " do
       true_ = fn -> [ [:zap, :i] ] end
       false_ = fn -> [ [:swap, :zap, :i] ] end
@@ -132,6 +132,53 @@ defmodule AminoInterpreterTest do
       assert [ false_, true_,  xor_ ] |> Amino.eval() == [ true_ ] |> Amino.eval()
       assert [ true_,  false_, xor_ ] |> Amino.eval() == [ true_ ] |> Amino.eval()
       assert [ true_,  true_,  xor_ ] |> Amino.eval() == [ false_ ] |> Amino.eval()
+    end
+  end
+
+  describe "Church Numericals" do
+    test "Numbers" do
+      cSucc = fn -> [ [:dup, :dip], :dip, :i ] end
+
+      c0 = fn -> [ :zap ] end;
+      c1 = fn -> [ [c0], cSucc ] end;
+      c2 = fn -> [ [c1], cSucc ] end;
+      c3 = fn -> [ [c2], cSucc ] end;
+
+      assert [ [:A], c0 ] |> Amino.eval() == []
+      assert [ [:A], c1 ] |> Amino.eval() == [:A]
+      assert [ [:A], c2 ] |> Amino.eval() == [:A, :A]
+      assert [ [:A], c3 ] |> Amino.eval() == [:A, :A, :A]
+    end
+
+    test "Add" do
+      cSucc = fn -> [ [:dup, :dip], :dip, :i ] end
+      cAdd = fn -> [ [[[cSucc], :cons]], :dip, :i, :i ] end
+
+      c0 = fn -> [ :zap ] end;
+      c1 = fn -> [ [c0], cSucc ] end;
+      c2 = fn -> [ [c1], cSucc ] end;
+      c3 = fn -> [ [c2], cSucc ] end;
+      c4 = fn -> [ [c3], cSucc ] end;
+      c5 = fn -> [ [c4], cSucc ] end;
+
+      assert [ [c1], [c4], cAdd ] |> Amino.eval() == [ c5 ] |> Amino.eval()
+      assert [ [c2], [c3], cAdd ] |> Amino.eval() == [ c5 ] |> Amino.eval()
+    end
+  end
+
+  describe "Alternative Church Numericals" do
+    test "repn - take program and run n times" do
+      run = fn -> [ :dup, :dip ] end
+
+      rep0 = fn -> [ :zap ] end
+      rep1 = fn -> [ run, :zap ] end
+      rep2 = fn -> [ run, run, :zap ] end
+      rep3 = fn -> [ run, run, run, :zap ] end
+
+      assert [ [:A], rep0  ] |> Amino.eval() == []
+      assert [ [:A], rep1  ] |> Amino.eval() == [:A]
+      assert [ [:A], rep2  ] |> Amino.eval() == [:A, :A]
+      assert [ [:A], rep3  ] |> Amino.eval() == [:A, :A, :A]
     end
   end
 

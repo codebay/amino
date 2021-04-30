@@ -13,18 +13,6 @@ defmodule Amino.Interpreter do
     [B] [A] :cons == [[B] A]  Inserts the element below the top of the stack as the head of the list on top of the stack.
         [A] :i    == A        Interprets the quotation at the top of the stack.
     [B] [A] :dip  == A [B]    Pops two quotations off the stack, then executes the first and pushes the second.
-
-  Additional combinators
-
-    [B] [A] :take == [A [B]]  Takes the quotation at the end of the stack
-
-  Boolean Logic
-            :true  => [:zap, :i]
-            :false => [:swap :zap :i]
-
-            :not => [:false] [:true]
-
-   [:false] :not =>
   """
 
   # Combinator Operators
