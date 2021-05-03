@@ -136,13 +136,13 @@ defmodule AminoInterpreterTest do
   end
 
   describe "Church Numerals" do
-    test "Numbers" do
-      cSucc = fn -> [ [:dup, :dip], :dip, :i ] end
+    test "Numbers - succ (n+1)" do
+      succ = fn -> [ [:dup, :dip], :dip, :i ] end # n + 1
 
       c0 = fn -> [ :zap ] end
-      c1 = fn -> [ [c0], cSucc ] end
-      c2 = fn -> [ [c1], cSucc ] end
-      c3 = fn -> [ [c2], cSucc ] end
+      c1 = fn -> [ [c0], succ ] end
+      c2 = fn -> [ [c1], succ ] end
+      c3 = fn -> [ [c2], succ ] end
 
       assert [ [:A], c0 ] |> Amino.eval() == []
       assert [ [:A], c1 ] |> Amino.eval() == [:A]
@@ -151,90 +151,91 @@ defmodule AminoInterpreterTest do
     end
 
     test "Add" do
-      cSucc = fn -> [ [:dup, :dip], :dip, :i ] end
-      cAdd = fn -> [ [[[cSucc], :cons]], :dip, :i, :i ] end
+      succ = fn -> [ [:dup, :dip], :dip, :i ] end
+      add = fn -> [ [[[succ], :cons]], :dip, :i, :i ] end
 
       c0 = fn -> [ :zap ] end
-      c1 = fn -> [ [c0], cSucc ] end
-      c2 = fn -> [ [c1], cSucc ] end
-      c3 = fn -> [ [c2], cSucc ] end
-      c4 = fn -> [ [c3], cSucc ] end
-      c5 = fn -> [ [c4], cSucc ] end
+      c1 = fn -> [ [c0], succ ] end
+      c2 = fn -> [ [c1], succ ] end
+      c3 = fn -> [ [c2], succ ] end
+      c4 = fn -> [ [c3], succ ] end
+      c5 = fn -> [ [c4], succ ] end
 
-      assert [ [c0], [c0], cAdd ] |> Amino.eval() == [ c0 ] |> Amino.eval()
-      assert [ [c0], [c5], cAdd ] |> Amino.eval() == [ c5 ] |> Amino.eval()
-      assert [ [c1], [c4], cAdd ] |> Amino.eval() == [ c5 ] |> Amino.eval()
-      assert [ [c2], [c3], cAdd ] |> Amino.eval() == [ c5 ] |> Amino.eval()
+      assert [ [c0], [c0], add ] |> Amino.eval() == [ c0 ] |> Amino.eval()
+      assert [ [c0], [c5], add ] |> Amino.eval() == [ c5 ] |> Amino.eval()
+      assert [ [c1], [c4], add ] |> Amino.eval() == [ c5 ] |> Amino.eval()
+      assert [ [c2], [c3], add ] |> Amino.eval() == [ c5 ] |> Amino.eval()
     end
 
     test "Multiplication" do
-      cSucc = fn -> [ [:dup, :dip], :dip, :i ] end
+      succ = fn -> [ [:dup, :dip], :dip, :i ] end
 
       c0 = fn -> [ :zap ] end;
-      c1 = fn -> [ [c0], cSucc ] end
-      c2 = fn -> [ [c1], cSucc ] end
-      c3 = fn -> [ [c2], cSucc ] end
-      c4 = fn -> [ [c3], cSucc ] end
-      c5 = fn -> [ [c4], cSucc ] end
-      c6 = fn -> [ [c5], cSucc ] end
+      c1 = fn -> [ [c0], succ ] end
+      c2 = fn -> [ [c1], succ ] end
+      c3 = fn -> [ [c2], succ ] end
+      c4 = fn -> [ [c3], succ ] end
+      c5 = fn -> [ [c4], succ ] end
+      c6 = fn -> [ [c5], succ ] end
 
-      cAdd = fn -> [ [[[cSucc], :cons]], :dip, :i, :i ] end
-      cMul = fn -> [ [[[c0]], :dip, [cAdd], :cons, [:cons], :cons ], :dip, :i, :i ] end
+      add = fn -> [ [[[succ], :cons]], :dip, :i, :i ] end
+      mul = fn -> [ [[[c0]], :dip, [add], :cons, [:cons], :cons ], :dip, :i, :i ] end
 
-      assert [ [c1], [c1], cMul ] |> Amino.eval() == [ c1 ] |> Amino.eval()
-      assert [ [c1], [c4], cMul ] |> Amino.eval() == [ c4 ] |> Amino.eval()
-      assert [ [c2], [c3], cMul ] |> Amino.eval() == [ c6 ] |> Amino.eval()
+      assert [ [c1], [c1], mul ] |> Amino.eval() == [ c1 ] |> Amino.eval()
+      assert [ [c1], [c4], mul ] |> Amino.eval() == [ c4 ] |> Amino.eval()
+      assert [ [c2], [c3], mul ] |> Amino.eval() == [ c6 ] |> Amino.eval()
     end
 
     test "Power" do
-      cSucc = fn -> [ [:dup, :dip], :dip, :i ] end
+      succ = fn -> [ [:dup, :dip], :dip, :i ] end
 
       c0 = fn -> [ :zap ] end;
-      c1 = fn -> [ [c0], cSucc ] end
-      c2 = fn -> [ [c1], cSucc ] end
-      c3 = fn -> [ [c2], cSucc ] end
-      c4 = fn -> [ [c3], cSucc ] end
-      c5 = fn -> [ [c4], cSucc ] end
-      c6 = fn -> [ [c5], cSucc ] end
-      c7 = fn -> [ [c6], cSucc ] end
-      c8 = fn -> [ [c7], cSucc ] end
+      c1 = fn -> [ [c0], succ ] end
+      c2 = fn -> [ [c1], succ ] end
+      c3 = fn -> [ [c2], succ ] end
+      c4 = fn -> [ [c3], succ ] end
+      c5 = fn -> [ [c4], succ ] end
+      c6 = fn -> [ [c5], succ ] end
+      c7 = fn -> [ [c6], succ ] end
+      c8 = fn -> [ [c7], succ ] end
 
-      cAdd = fn -> [ [[[cSucc], :cons]], :dip, :i, :i ] end
-      cMul = fn -> [ [[[c0]], :dip, [cAdd], :cons, [:cons], :cons ], :dip, :i, :i ] end
-      cPow = fn -> [ [[[c1]], :dip, [cMul], :cons, [:cons], :cons ], :dip, :i, :i ] end
+      add = fn -> [ [[[succ], :cons]], :dip, :i, :i ] end
+      mul = fn -> [ [[[c0]], :dip, [add], :cons, [:cons], :cons ], :dip, :i, :i ] end
+      pow = fn -> [ [[[c1]], :dip, [mul], :cons, [:cons], :cons ], :dip, :i, :i ] end
 
-      assert [ [c2], [c0], cPow ] |> Amino.eval() == [ c1 ] |> Amino.eval()
-      assert [ [c2], [c1], cPow ] |> Amino.eval() == [ c2 ] |> Amino.eval()
-      assert [ [c2], [c2], cPow ] |> Amino.eval() == [ c4 ] |> Amino.eval()
-      assert [ [c2], [c3], cPow ] |> Amino.eval() == [ c8 ] |> Amino.eval()
+      assert [ [c2], [c0], pow ] |> Amino.eval() == [ c1 ] |> Amino.eval()
+      assert [ [c2], [c1], pow ] |> Amino.eval() == [ c2 ] |> Amino.eval()
+      assert [ [c2], [c2], pow ] |> Amino.eval() == [ c4 ] |> Amino.eval()
+      assert [ [c2], [c3], pow ] |> Amino.eval() == [ c8 ] |> Amino.eval()
     end
 
     test "Combinations of add, mul & pow" do
-      cSucc = fn -> [ [:dup, :dip], :dip, :i ] end
+      succ = fn -> [ [:dup, :dip], :dip, :i ] end
 
       c0 = fn -> [ :zap ] end;
-      c1 = fn -> [ [c0], cSucc ] end
-      c2 = fn -> [ [c1], cSucc ] end
-      c3 = fn -> [ [c2], cSucc ] end
-      c4 = fn -> [ [c3], cSucc ] end
-      c5 = fn -> [ [c4], cSucc ] end
-      c6 = fn -> [ [c5], cSucc ] end
-      c7 = fn -> [ [c6], cSucc ] end
-      c8 = fn -> [ [c7], cSucc ] end
+      c1 = fn -> [ [c0], succ ] end
+      c2 = fn -> [ [c1], succ ] end
+      c3 = fn -> [ [c2], succ ] end
+      c4 = fn -> [ [c3], succ ] end
+      c5 = fn -> [ [c4], succ ] end
+      c6 = fn -> [ [c5], succ ] end
+      c7 = fn -> [ [c6], succ ] end
+      c8 = fn -> [ [c7], succ ] end
 
-      cAdd = fn -> [ [[[cSucc], :cons]], :dip, :i, :i ] end
-      cMul = fn -> [ [[[c0]], :dip, [cAdd], :cons, [:cons], :cons ], :dip, :i, :i ] end
-      cPow = fn -> [ [[[c1]], :dip, [cMul], :cons, [:cons], :cons ], :dip, :i, :i ] end
+      add = fn -> [ [[[succ], :cons]], :dip, :i, :i ] end
+      mul = fn -> [ [[[c0]], :dip, [add], :cons, [:cons], :cons ], :dip, :i, :i ] end
+      pow = fn -> [ [[[c1]], :dip, [mul], :cons, [:cons], :cons ], :dip, :i, :i ] end
 
       # 2^2 * (1+1) = 4 * 2 = 8
       # notice that quotations are need around the expression, similiar to parentheses in infix notation!
-      # This occurs because the cAdd, cMul & cPow combinators result in unquoted results.
-      assert [ [[c2], [c2], cPow], [[c1], [c1], cAdd], cMul ] |> Amino.eval() == [ c8 ] |> Amino.eval()
+      # This occurs because the add, mul & pow combinators result in unquoted results.
+      assert [ [[c2], [c2], pow], [[c1], [c1], add], mul ] |> Amino.eval() == [ c8 ] |> Amino.eval()
     end
   end
 
   describe "Alternative Church Numerals" do
-    test "Numbers" do
+    test "Numbers - succ (n+1)" do
+      # runs the program p n times i.e [p] Rn == p p ... p [p]
       run = fn -> [ :dup, :dip ] end
 
       c0 = fn -> [ :zap ] end
@@ -250,8 +251,8 @@ defmodule AminoInterpreterTest do
 
     test "Add" do
       run = fn -> [ :dup, :dip ] end
-      cSucc = fn -> [ [:dup, :dip], :dip, :i ] end
-      cAdd = fn -> [ [[[cSucc], :cons]], :dip, :i, :i ] end
+      succ = fn -> [ [:dup, :dip], :dip, :i ] end
+      add = fn -> [ [[[succ], :cons]], :dip, :i, :i ] end
 
       c0 = fn -> [ :zap ] end
       c1 = fn -> [ run, c0 ] end
@@ -260,15 +261,15 @@ defmodule AminoInterpreterTest do
       c4 = fn -> [ run, c3 ] end
       c5 = fn -> [ run, c4 ] end
 
-      assert [ [c0], [c0], cAdd ] |> Amino.eval() == [ c0 ] |> Amino.eval()
-      assert [ [c0], [c5], cAdd ] |> Amino.eval() == [ c5 ] |> Amino.eval()
-      assert [ [c1], [c4], cAdd ] |> Amino.eval() == [ c5 ] |> Amino.eval()
-      assert [ [c2], [c3], cAdd ] |> Amino.eval() == [ c5 ] |> Amino.eval()
+      assert [ [c0], [c0], add ] |> Amino.eval() == [ c0 ] |> Amino.eval()
+      assert [ [c0], [c5], add ] |> Amino.eval() == [ c5 ] |> Amino.eval()
+      assert [ [c1], [c4], add ] |> Amino.eval() == [ c5 ] |> Amino.eval()
+      assert [ [c2], [c3], add ] |> Amino.eval() == [ c5 ] |> Amino.eval()
     end
 
     test "Multiplication" do
       run = fn -> [ :dup, :dip ] end
-      cSucc = fn -> [ [:dup, :dip], :dip, :i ] end
+      succ = fn -> [ [:dup, :dip], :dip, :i ] end
 
       c0 = fn -> [ :zap ] end;
       c1 = fn -> [ run, c0 ] end
@@ -278,17 +279,17 @@ defmodule AminoInterpreterTest do
       c5 = fn -> [ run, c4 ] end
       c6 = fn -> [ run, c5 ] end
 
-      cAdd = fn -> [ [[[cSucc], :cons]], :dip, :i, :i ] end
-      cMul = fn -> [ [[[c0]], :dip, [cAdd], :cons, [:cons], :cons ], :dip, :i, :i ] end
+      add = fn -> [ [[[succ], :cons]], :dip, :i, :i ] end
+      mul = fn -> [ [[[c0]], :dip, [add], :cons, [:cons], :cons ], :dip, :i, :i ] end
 
-      assert [ [c1], [c1], cMul ] |> Amino.eval() == [ c1 ] |> Amino.eval()
-      assert [ [c1], [c4], cMul ] |> Amino.eval() == [ c4 ] |> Amino.eval()
-      assert [ [c2], [c3], cMul ] |> Amino.eval() == [ c6 ] |> Amino.eval()
+      assert [ [c1], [c1], mul ] |> Amino.eval() == [ c1 ] |> Amino.eval()
+      assert [ [c1], [c4], mul ] |> Amino.eval() == [ c4 ] |> Amino.eval()
+      assert [ [c2], [c3], mul ] |> Amino.eval() == [ c6 ] |> Amino.eval()
     end
 
     test "Power" do
       run = fn -> [ :dup, :dip ] end
-      cSucc = fn -> [ [:dup, :dip], :dip, :i ] end
+      succ = fn -> [ [:dup, :dip], :dip, :i ] end
 
       c0 = fn -> [ :zap ] end;
       c1 = fn -> [ run, c0 ] end
@@ -300,19 +301,19 @@ defmodule AminoInterpreterTest do
       c7 = fn -> [ run, c6 ] end
       c8 = fn -> [ run, c7 ] end
 
-      cAdd = fn -> [ [[[cSucc], :cons]], :dip, :i, :i ] end
-      cMul = fn -> [ [[[c0]], :dip, [cAdd], :cons, [:cons], :cons ], :dip, :i, :i ] end
-      cPow = fn -> [ [[[c1]], :dip, [cMul], :cons, [:cons], :cons ], :dip, :i, :i ] end
+      add = fn -> [ [[[succ], :cons]], :dip, :i, :i ] end
+      mul = fn -> [ [[[c0]], :dip, [add], :cons, [:cons], :cons ], :dip, :i, :i ] end
+      pow = fn -> [ [[[c1]], :dip, [mul], :cons, [:cons], :cons ], :dip, :i, :i ] end
 
-      assert [ [c2], [c0], cPow ] |> Amino.eval() == [ c1 ] |> Amino.eval()
-      assert [ [c2], [c1], cPow ] |> Amino.eval() == [ c2 ] |> Amino.eval()
-      assert [ [c2], [c2], cPow ] |> Amino.eval() == [ c4 ] |> Amino.eval()
-      assert [ [c2], [c3], cPow ] |> Amino.eval() == [ c8 ] |> Amino.eval()
+      assert [ [c2], [c0], pow ] |> Amino.eval() == [ c1 ] |> Amino.eval()
+      assert [ [c2], [c1], pow ] |> Amino.eval() == [ c2 ] |> Amino.eval()
+      assert [ [c2], [c2], pow ] |> Amino.eval() == [ c4 ] |> Amino.eval()
+      assert [ [c2], [c3], pow ] |> Amino.eval() == [ c8 ] |> Amino.eval()
     end
 
     test "Combinations of add, mul & pow" do
       run = fn -> [ :dup, :dip ] end
-      cSucc = fn -> [ [:dup, :dip], :dip, :i ] end
+      succ = fn -> [ [:dup, :dip], :dip, :i ] end
 
       c0 = fn -> [ :zap ] end;
       c1 = fn -> [ run, c0 ] end
@@ -324,25 +325,25 @@ defmodule AminoInterpreterTest do
       c7 = fn -> [ run, c6 ] end
       c8 = fn -> [ run, c7 ] end
 
-      cAdd = fn -> [ [[[cSucc], :cons]], :dip, :i, :i ] end
-      cMul = fn -> [ [[[c0]], :dip, [cAdd], :cons, [:cons], :cons ], :dip, :i, :i ] end
-      cPow = fn -> [ [[[c1]], :dip, [cMul], :cons, [:cons], :cons ], :dip, :i, :i ] end
+      add = fn -> [ [[[succ], :cons]], :dip, :i, :i ] end
+      mul = fn -> [ [[[c0]], :dip, [add], :cons, [:cons], :cons ], :dip, :i, :i ] end
+      pow = fn -> [ [[[c1]], :dip, [mul], :cons, [:cons], :cons ], :dip, :i, :i ] end
 
       # 2^2 * (1+1) = 4 * 2 = 8
       # notice that quotations are need around the expression, similiar to parentheses in infix notation!
-      # This occurs because the cAdd, cMul & cPow combinators result in unquoted results.
-      assert [ [[c2], [c2], cPow], [[c1], [c1], cAdd], cMul ] |> Amino.eval() == [ c8 ] |> Amino.eval()
+      # This occurs because the add, mul & pow combinators result in unquoted results.
+      assert [ [[c2], [c2], pow], [[c1], [c1], add], mul ] |> Amino.eval() == [ c8 ] |> Amino.eval()
     end
   end
 
   describe "Third Alternative Church Numerals" do
-    test "Numbers" do
-      qSucc = fn -> [ [[:dup, [:i], :dip], :dip, :i], :cons ] end
+    test "Numbers - succ (n+1)" do
+      succ = fn -> [ [[:dup, :dip], :dip, :i], :cons ] end
 
       q0 = fn -> [ [:zap] ] end
-      q1 = fn -> [ q0, qSucc ] end
-      q2 = fn -> [ q1, qSucc ] end
-      q3 = fn -> [ q2, qSucc ] end
+      q1 = fn -> [ q0, succ ] end
+      q2 = fn -> [ q1, succ ] end
+      q3 = fn -> [ q2, succ ] end
 
       assert [ [:A], q0, :i ] |> Amino.eval() == []
       assert [ [:A], q1, :i ] |> Amino.eval() == [:A]
@@ -351,84 +352,103 @@ defmodule AminoInterpreterTest do
     end
 
     test "Add" do
-      qSucc = fn -> [ [[:dup, [:i], :dip], :dip, :i], :cons ] end
+      succ = fn -> [ [[:dup, :dip], :dip, :i], :cons ] end
 
       q0 = fn -> [ [:zap] ] end
-      q1 = fn -> [ q0, qSucc ] end
-      q2 = fn -> [ q1, qSucc ] end
-      q3 = fn -> [ q2, qSucc ] end
-      q4 = fn -> [ q3, qSucc ] end
-      q5 = fn -> [ q4, qSucc ] end
+      q1 = fn -> [ q0, succ ] end
+      q2 = fn -> [ q1, succ ] end
+      q3 = fn -> [ q2, succ ] end
+      q4 = fn -> [ q3, succ ] end
+      q5 = fn -> [ q4, succ ] end
 
-      qAdd = fn -> [ [[[qSucc, :i], :cons], :swap, :i, :i], :cons, :cons ] end
+      add = fn -> [ [[[succ, :i], :cons], :swap, :i, :i], :cons, :cons ] end
 
-      assert [ q0, q0, qAdd, :i ] |> Amino.eval() == [ q0, :i ] |> Amino.eval()
-      assert [ q0, q5, qAdd, :i ] |> Amino.eval() == [ q5, :i ] |> Amino.eval()
-      assert [ q1, q4, qAdd, :i ] |> Amino.eval() == [ q5, :i ] |> Amino.eval()
-      assert [ q2, q3, qAdd, :i ] |> Amino.eval() == [ q5, :i ] |> Amino.eval()
+      assert [ q0, q0, add, :i ] |> Amino.eval() == [ q0, :i ] |> Amino.eval()
+      assert [ q0, q5, add, :i ] |> Amino.eval() == [ q5, :i ] |> Amino.eval()
+      assert [ q1, q4, add, :i ] |> Amino.eval() == [ q5, :i ] |> Amino.eval()
+      assert [ q2, q3, add, :i ] |> Amino.eval() == [ q5, :i ] |> Amino.eval()
     end
 
     test "Multiplication" do
-      qSucc = fn -> [ [[:dup, [:i], :dip], :dip, :i], :cons ] end
+      succ = fn -> [ [[:dup, :dip], :dip, :i], :cons ] end
 
       q0 = fn -> [ [:zap] ] end
-      q1 = fn -> [ q0, qSucc ] end
-      q2 = fn -> [ q1, qSucc ] end
-      q3 = fn -> [ q2, qSucc ] end
-      q4 = fn -> [ q3, qSucc ] end
-      q5 = fn -> [ q4, qSucc ] end
-      q6 = fn -> [ q5, qSucc ] end
+      q1 = fn -> [ q0, succ ] end
+      q2 = fn -> [ q1, succ ] end
+      q3 = fn -> [ q2, succ ] end
+      q4 = fn -> [ q3, succ ] end
+      q5 = fn -> [ q4, succ ] end
+      q6 = fn -> [ q5, succ ] end
 
-      qAdd = fn -> [ [[[qSucc, :i], :cons], :swap, :i, :i], :cons, :cons ] end
-      qMul = fn -> [ [[[[q0, :i]], :dip, [qAdd, :i], :cons, [:cons], :cons], :dip, :i, :i], :cons, :cons ] end
+      add = fn -> [ [[[succ, :i], :cons], :swap, :i, :i], :cons, :cons ] end
+      mul = fn -> [ [[[[q0, :i]], :dip, [add, :i], :cons, [:cons], :cons], :dip, :i, :i], :cons, :cons ] end
 
-      assert [ q1, q1, qMul, :i ] |> Amino.eval() == [ q1, :i ] |> Amino.eval()
-      assert [ q1, q4, qMul, :i ] |> Amino.eval() == [ q4, :i ] |> Amino.eval()
-      assert [ q2, q3, qMul, :i ] |> Amino.eval() == [ q6, :i ] |> Amino.eval()
+      assert [ q1, q1, mul, :i ] |> Amino.eval() == [ q1, :i ] |> Amino.eval()
+      assert [ q1, q4, mul, :i ] |> Amino.eval() == [ q4, :i ] |> Amino.eval()
+      assert [ q2, q3, mul, :i ] |> Amino.eval() == [ q6, :i ] |> Amino.eval()
     end
 
     test "Power" do
-      qSucc = fn -> [ [[:dup, [:i], :dip], :dip, :i], :cons ] end
+      succ = fn -> [ [[:dup, :dip], :dip, :i], :cons ] end
 
       q0 = fn -> [ [:zap] ] end
-      q1 = fn -> [ q0, qSucc ] end
-      q2 = fn -> [ q1, qSucc ] end
-      q3 = fn -> [ q2, qSucc ] end
-      q4 = fn -> [ q3, qSucc ] end
-      q5 = fn -> [ q4, qSucc ] end
-      q6 = fn -> [ q5, qSucc ] end
-      q7 = fn -> [ q6, qSucc ] end
-      q8 = fn -> [ q7, qSucc ] end
+      q1 = fn -> [ q0, succ ] end
+      q2 = fn -> [ q1, succ ] end
+      q3 = fn -> [ q2, succ ] end
+      q4 = fn -> [ q3, succ ] end
+      q5 = fn -> [ q4, succ ] end
+      q6 = fn -> [ q5, succ ] end
+      q7 = fn -> [ q6, succ ] end
+      q8 = fn -> [ q7, succ ] end
 
-      qAdd = fn -> [ [[[qSucc, :i], :cons], :swap, :i, :i], :cons, :cons ] end
-      qMul = fn -> [ [[[[q0, :i]], :dip, [qAdd, :i], :cons, [:cons], :cons], :dip, :i, :i], :cons, :cons ] end
-      qPow = fn -> [ [[[[q1, :i]], :dip, [qMul, :i], :cons, [:cons], :cons], :dip, :i, :i], :cons, :cons ] end
+      add = fn -> [ [[[succ, :i], :cons], :swap, :i, :i], :cons, :cons ] end
+      mul = fn -> [ [[[[q0, :i]], :dip, [add, :i], :cons, [:cons], :cons], :dip, :i, :i], :cons, :cons ] end
+      pow = fn -> [ [[[[q1, :i]], :dip, [mul, :i], :cons, [:cons], :cons], :dip, :i, :i], :cons, :cons ] end
 
-      assert [ q2, q0, qPow, :i ] |> Amino.eval() == [ q1, :i ] |> Amino.eval()
-      assert [ q2, q1, qPow, :i ] |> Amino.eval() == [ q2, :i ] |> Amino.eval()
-      assert [ q2, q2, qPow, :i ] |> Amino.eval() == [ q4, :i ] |> Amino.eval()
-      assert [ q2, q3, qPow, :i ] |> Amino.eval() == [ q8, :i ] |> Amino.eval()
+      assert [ q2, q0, pow, :i ] |> Amino.eval() == [ q1, :i ] |> Amino.eval()
+      assert [ q2, q1, pow, :i ] |> Amino.eval() == [ q2, :i ] |> Amino.eval()
+      assert [ q2, q2, pow, :i ] |> Amino.eval() == [ q4, :i ] |> Amino.eval()
+      assert [ q2, q3, pow, :i ] |> Amino.eval() == [ q8, :i ] |> Amino.eval()
     end
 
     test "Combinations of add, mul & pow" do
-      qSucc = fn -> [ [[:dup, [:i], :dip], :dip, :i], :cons ] end
+      succ = fn -> [ [[:dup, :dip], :dip, :i], :cons ] end
 
       q0 = fn -> [ [:zap] ] end
-      q1 = fn -> [ q0, qSucc ] end
-      q2 = fn -> [ q1, qSucc ] end
-      q3 = fn -> [ q2, qSucc ] end
-      q4 = fn -> [ q3, qSucc ] end
-      q5 = fn -> [ q4, qSucc ] end
-      q6 = fn -> [ q5, qSucc ] end
-      q7 = fn -> [ q6, qSucc ] end
-      q8 = fn -> [ q7, qSucc ] end
+      q1 = fn -> [ q0, succ ] end
+      q2 = fn -> [ q1, succ ] end
+      q3 = fn -> [ q2, succ ] end
+      q4 = fn -> [ q3, succ ] end
+      q5 = fn -> [ q4, succ ] end
+      q6 = fn -> [ q5, succ ] end
+      q7 = fn -> [ q6, succ ] end
+      q8 = fn -> [ q7, succ ] end
 
-      qAdd = fn -> [ [[[qSucc, :i], :cons], :swap, :i, :i], :cons, :cons ] end
-      qMul = fn -> [ [[[[q0, :i]], :dip, [qAdd, :i], :cons, [:cons], :cons], :dip, :i, :i], :cons, :cons ] end
-      qPow = fn -> [ [[[[q1, :i]], :dip, [qMul, :i], :cons, [:cons], :cons], :dip, :i, :i], :cons, :cons ] end
+      add = fn -> [ [[[succ, :i], :cons], :swap, :i, :i], :cons, :cons ] end
+      mul = fn -> [ [[[[q0, :i]], :dip, [add, :i], :cons, [:cons], :cons], :dip, :i, :i], :cons, :cons ] end
+      pow = fn -> [ [[[[q1, :i]], :dip, [mul, :i], :cons, [:cons], :cons], :dip, :i, :i], :cons, :cons ] end
 
       # 2^2 * (1+1) = 4 * 2 = 8
-      assert [ q2, q2, qPow, q1, q1, qAdd, qMul, :i ] |> Amino.eval() == [ q8, :i ] |> Amino.eval()
+      assert [ q2, q2, pow, q1, q1, add, mul, :i ] |> Amino.eval() == [ q8, :i ] |> Amino.eval()
+    end
+  end
+
+  describe "Church predicates & conditionals" do
+    test "if equal to zero" do
+      true_ = fn -> [ [:zap, :i] ] end
+      false_ = fn -> [ [:swap, :zap, :i] ] end
+      eq0 = fn -> [ [[true_], [:zap, [false_]]], :dip, :i, :i ] end
+      if_ = fn -> [ :i ] end
+
+      run = fn -> [ :dup, :dip ] end
+
+      c0 = fn -> [ :zap ] end
+      c1 = fn -> [ run, c0 ] end
+      c2 = fn -> [ run, c1 ] end
+
+      assert [ [:Yes], [:No], [c0], eq0, if_ ] |> Amino.eval() == [ :Yes ]
+      assert [ [:Yes], [:No], [c1], eq0, if_ ] |> Amino.eval() == [ :No ]
+      assert [ [:Yes], [:No], [c2], eq0, if_ ] |> Amino.eval() == [ :No ]
     end
   end
 

@@ -48,8 +48,8 @@ defmodule Amino.Interpreter do
       |> Enum.reduce(stack, &op/2)
   end
 
-  def eval(quotation) when is_list(quotation) do
-    quotation
+  def eval(program) when is_list(program) do
+    program
     |> dequote([])
     |> Enum.reverse()
   end
